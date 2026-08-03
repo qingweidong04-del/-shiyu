@@ -38,67 +38,54 @@
 
 ```
 paiyucun/
-├── public/
-│   └── favicon.svg                  # 品牌图标
-├── src/
-│   ├── main.js                      # 入口：注册 Pinia、Router、Vant
-│   ├── App.vue                      # 根组件
-│   ├── style.css                    # 全局样式 + CSS 变量
-│   │
-│   ├── router/
-│   │   └── index.js                 # 4 条路由（Camera / Result / Discover / Setting）
-│   │
-│   ├── store/
-│   │   └── discovery.js             # Pinia Store：拍照 → 识别 → 保存 → 历史
-│   │
-│   ├── api/
-│   │   ├── index.js                 # API 统一入口（自动切换 Mock / 真实后端）
-│   │   ├── http.js                  # Axios 实例 + 拦截器
-│   │   └── mock.js                  # Mock 实现
-│   │
-│   ├── mock/
-│   │   └── poem.js                  # 诗词数据库（10 首） + AI 匹配逻辑
-│   │
-│   ├── composables/
-│   │   └── useShareImage.js         # Canvas 分享图生成
-│   │
-│   ├── views/
-│   │   ├── Camera.vue               # 首页：拍照
-│   │   ├── Result.vue               # 核心页：古诗展示 + 朗读 + 操作
-│   │   ├── Discover.vue             # 历史页：时间线 + 滑动删除
-│   │   └── Setting.vue              # 设置页
-│   │
-│   └── components/
-│       ├── CameraBox.vue            # 相机取景（WebRTC / 系统相机双模式）
-│       ├── PoemCard.vue             # 诗歌卡片（诗句 + 拼音 + 释义）
-│       ├── AudioPlayer.vue          # 语音朗读播放器
-│       ├── ResultActions.vue        # 操作按钮栏
-│       ├── FullPoemSheet.vue        # 全文弹窗
-│       └── ShareCard.vue            # (预留) 分享卡片
+├── frontend/                        # Vue3 前端
+│   ├── src/
+│   │   ├── views/                   # 页面（Camera / Result / Discover / Setting）
+│   │   ├── components/              # 业务组件（CameraBox / PoemCard / AudioPlayer ...）
+│   │   ├── store/                   # Pinia 状态管理
+│   │   ├── api/                     # API 层（Mock / Real 自动切换）
+│   │   ├── mock/                    # Mock 诗词数据库
+│   │   ├── composables/             # 组合式函数（分享图生成等）
+│   │   └── router/                  # 路由配置
+│   ├── vite.config.js
+│   └── package.json
 │
-├── .env.development                 # 开发环境（Mock 模式）
-├── .env.production                  # 生产环境（真实 API）
-├── vite.config.js                   # Vite 配置 + Vant 按需引入
-└── index.html                       # 入口 HTML
+└── backend/                         # Spring Boot 后端
+    ├── src/main/java/com/paiyucun/
+    │   ├── controller/              # 控制器
+    │   ├── service/                 # 业务逻辑
+    │   ├── mapper/                  # MyBatis Plus Mapper
+    │   ├── entity/                  # 数据库实体
+    │   ├── dto/                     # 数据传输对象
+    │   ├── vo/                      # 视图对象
+    │   ├── config/                  # 配置类
+    │   └── common/                  # 通用类（Result 等）
+    ├── src/main/resources/
+    │   └── application.yml          # 应用配置
+    └── pom.xml
 ```
 
 ---
 
 ## 🚀 快速开始
 
+### 前端
+
 ```bash
-# 安装依赖
+cd frontend
 npm install
-
-# 启动开发服务器
-npm run dev
-
-# 构建生产版本
-npm run build
-
-# 预览构建产物
-npm run preview
+npm run dev        # 开发 → http://localhost:5173
+npm run build      # 构建 → frontend/dist/
 ```
+
+### 后端
+
+```bash
+cd backend
+mvn spring-boot:run    # 启动 → http://localhost:8080
+```
+
+> 后端首次启动需要 MySQL，或暂时注释 `application.yml` 中的数据源配置。
 
 ### 移动端测试
 
