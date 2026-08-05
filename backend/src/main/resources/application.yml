@@ -16,6 +16,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+# 应用自定义配置
+app:
+  upload-path: D:/董庆玮/古诗词/paiyucun/backend/uploads
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
