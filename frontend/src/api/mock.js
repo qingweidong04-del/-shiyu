@@ -12,10 +12,29 @@ import { discoverFromImage, switchToAnotherPoem, poemDB, matchPoem } from '../mo
 // ===== 模拟延迟 =====
 const delay = (ms = 500) => new Promise((r) => setTimeout(r, ms))
 
+// ===== 完整发现流程（Mock）=====
+
+export async function createDiscovery(file) {
+  const base64 = typeof file === 'string' ? file : ''
+  const raw = await discoverFromImage(base64)
+  return {
+    id: raw.id,
+    imageUrl: raw.photoUrl,
+    objectName: raw.analysis.object,
+    confidence: raw.analysis.confidence,
+    poem: {
+      title: raw.poem.title,
+      content: raw.poem.matchLine,
+      author: raw.poem.author,
+      dynasty: raw.poem.dynasty,
+      pinyin: raw.poem.pinyin,
+      translation: raw.poem.translation,
+      source: raw.poem.author + '《' + raw.poem.title + '》'
+    }
+  }
+}
+
 // ===== 图片上传接口 =====
-// POST /api/image/upload
-// 参数: { file: File | string }
-// 返回: { imageUrl, object }
 
 export async function uploadImage(file) {
   await delay(800)

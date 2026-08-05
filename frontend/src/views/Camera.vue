@@ -77,11 +77,11 @@ const store = useDiscoveryStore()
  */
 async function handleCaptured(payload) {
   try {
-    // ① 图片数据写入 Store（Result 页需要用预览地址展示照片）
+    // ① 图片数据写入 Store
     store.setImageData(payload)
 
-    // ② 发起识别
-    await store.discover(payload.base64)
+    // ② 发起识别（Store 内部使用 File 对象）
+    await store.discover()
 
     // ③ 自动保存到历史记录
     store.addRecord()

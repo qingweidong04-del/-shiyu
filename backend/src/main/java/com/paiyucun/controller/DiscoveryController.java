@@ -3,16 +3,15 @@ package com.paiyucun.controller;
 import com.paiyucun.common.Result;
 import com.paiyucun.dto.DiscoverySaveDTO;
 import com.paiyucun.service.DiscoveryService;
+import com.paiyucun.vo.DiscoveryCreateVO;
 import com.paiyucun.vo.DiscoveryVO;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-/**
- * 发现记录接口
- */
 @RestController
 @RequestMapping("/api/discovery")
 @Validated
@@ -25,6 +24,15 @@ public class DiscoveryController {
     }
 
     /**
+     * 完整发现流程 — 拍照 → 识别 → 匹配 → 保存
+     */
+    @PostMapping("/create")
+    public Result<DiscoveryCreateVO> create(@RequestParam("image") MultipartFile image) {
+        DiscoveryCreateVO result = discoveryService.create(image);
+        return Result.ok(result);
+    }
+
+    /**
      * 保存发现记录
      */
     @PostMapping("/save")
@@ -34,11 +42,10 @@ public class DiscoveryController {
     }
 
     /**
-     * 查询历史记录（时间线）
+     * 查询历史记录
      */
     @GetMapping("/list")
     public Result<List<DiscoveryVO>> list() {
-        List<DiscoveryVO> list = discoveryService.list();
-        return Result.ok(list);
+        return Result.ok(discoveryService.list());
     }
 }

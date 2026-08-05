@@ -4,9 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.paiyucun.dto.DiscoverySaveDTO;
 import com.paiyucun.entity.Discovery;
 import com.paiyucun.mapper.DiscoveryMapper;
+import com.paiyucun.service.AiRecognitionService;
 import com.paiyucun.service.DiscoveryService;
+import com.paiyucun.service.PoemService;
+import com.paiyucun.util.FileUploadUtil;
+import com.paiyucun.vo.AiRecognitionVO;
+import com.paiyucun.vo.DiscoveryCreateVO;
 import com.paiyucun.vo.DiscoveryVO;
+import com.paiyucun.vo.PoemVO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,9 +23,59 @@ import java.util.stream.Collectors;
 public class DiscoveryServiceImpl implements DiscoveryService {
 
     private final DiscoveryMapper discoveryMapper;
+    private final AiRecognitionService aiRecognitionService;
+    private final PoemService poemService;
 
-    public DiscoveryServiceImpl(DiscoveryMapper discoveryMapper) {
+    @Value("${app.upload-path:./uploads}")
+    private String uploadPath;
+
+    public DiscoveryServiceImpl(DiscoveryMapper discoveryMapper,
+                                AiRecognitionService aiRecognitionService,
+                                PoemService poemService) {
         this.discoveryMapper = discoveryMapper;
+        this.aiRecognitionService = aiRecognitionService;
+        this.poemService = poemService;
+    }
+
+    @Override
+    public DiscoveryCreateVO create(MultipartFile image) {
+        // ① 保存图片
+        String imageUrl = FileUploadUtil.saveImage(image, uploadPath);
+
+        // ② AI 识别物体
+        AiRecognitionVO recognition = aiRecognitionService.recognize(imageUrl);
+
+        // ③ 根据物体匹配诗词
+        PoemVO poem = poemService.getByObject(recognition.getObjectName());
+
+        // ④ 保存发现记录
+        Discovery entity = new Discovery();
+        entity.setImageUrl(imageUrl);
+        entity.setObjectName(recognition.getObjectName());
+        entity.setPoemLine(poem != null ? poem.getContent() : null);
+        entity.setPoemSource(poem != null ? poem.getAuthor() + "《" + poem.getTitle() + "》" : null);
+        discoveryMapper.insert(entity);
+
+        // ⑤ 组装返回
+        DiscoveryCreateVO result = new DiscoveryCreateVO();
+        result.setId(entity.getId());
+        result.setImageUrl(imageUrl);
+        result.setObjectName(recognition.getObjectName());
+        result.setConfidence(recognition.getConfidence());
+
+        if (poem != null) {
+            DiscoveryCreateVO.PoemInfo info = new DiscoveryCreateVO.PoemInfo();
+            info.setTitle(poem.getTitle());
+            info.setContent(poem.getContent());
+            info.setAuthor(poem.getAuthor());
+            info.setDynasty(poem.getDynasty());
+            info.setPinyin(poem.getPinyin());
+            info.setTranslation(poem.getTranslation());
+            info.setSource(poem.getAuthor() + "《" + poem.getTitle() + "》");
+            result.setPoem(info);
+        }
+
+        return result;
     }
 
     @Override
@@ -33,12 +91,9 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 
     @Override
     public List<DiscoveryVO> list() {
-        List<Discovery> list = discoveryMapper.selectList(
-                new LambdaQueryWrapper<Discovery>()
-                        .orderByDesc(Discovery::getCreateTime)
-        );
-
-        return list.stream().map(e -> {
+        return discoveryMapper.selectList(
+                new LambdaQueryWrapper<Discovery>().orderByDesc(Discovery::getCreateTime)
+        ).stream().map(e -> {
             DiscoveryVO vo = new DiscoveryVO();
             vo.setId(e.getId());
             vo.setImageUrl(e.getImageUrl());
