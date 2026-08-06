@@ -19,6 +19,9 @@ public class PoemServiceImpl implements PoemService {
 
     @Override
     public PoemVO getByObject(String object) {
+        if (object == null || object.isBlank()) {
+            throw new BusinessException(400, "物体名称不能为空");
+        }
         // ① object_name 精确匹配
         Poem poem = poemMapper.selectOne(
                 new LambdaQueryWrapper<Poem>()

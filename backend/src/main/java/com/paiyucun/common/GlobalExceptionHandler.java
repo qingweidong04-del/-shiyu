@@ -2,17 +2,22 @@ package com.paiyucun.common;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
+import java.io.IOException;
 
 /**
  * 全局异常处理
  *
- * 所有 Controller 抛出的异常在此统一转换为 Result JSON 格式，
- * 无需在 Controller 中写 try-catch。
+ * 所有异常统一转为 Result JSON，前端直接展示 message 给用户。
  */
 @Slf4j
 @RestControllerAdvice
@@ -20,53 +25,81 @@ public class GlobalExceptionHandler {
 
     // ===== 业务异常 =====
 
-    /** 自定义业务异常 — 直接使用异常的 code 和 message */
     @ExceptionHandler(BusinessException.class)
     public Result<Void> handleBusiness(BusinessException e) {
-        log.warn("业务异常: [{}] {}", e.getCode(), e.getMessage());
+        log.warn("业务异常 [{}] {}", e.getCode(), e.getMessage());
         return Result.fail(e.getCode(), e.getMessage());
     }
 
     // ===== 参数校验 =====
 
-    /** @Validated + @NotBlank 方法参数校验 */
     @ExceptionHandler(ConstraintViolationException.class)
     public Result<Void> handleConstraintViolation(ConstraintViolationException e) {
         String msg = e.getConstraintViolations().stream()
-                .map(v -> v.getMessage())
-                .findFirst()
-                .orElse("参数校验失败");
+                .map(v -> v.getMessage()).findFirst().orElse("参数校验失败");
         return Result.fail(400, msg);
     }
 
-    /** Spring Boot 3.x 方法参数校验 */
     @ExceptionHandler(HandlerMethodValidationException.class)
     public Result<Void> handleMethodValidation(HandlerMethodValidationException e) {
         return Result.fail(400, "参数校验失败");
     }
 
-    /** @Valid 请求体校验 */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<Void> handleMethodArgument(MethodArgumentNotValidException e) {
         String msg = e.getBindingResult().getFieldErrors().stream()
-                .map(f -> f.getField() + ": " + f.getDefaultMessage())
-                .findFirst()
-                .orElse("参数校验失败");
+                .map(f -> f.getDefaultMessage()).findFirst().orElse("参数校验失败");
         return Result.fail(400, msg);
     }
 
-    /** 缺少必填参数 */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Result<Void> handleMissingParam(MissingServletRequestParameterException e) {
-        return Result.fail(400, "缺少参数: " + e.getParameterName());
+        return Result.fail(400, "缺少必填参数: " + e.getParameterName());
+    }
+
+    // ===== 文件上传 =====
+
+    /** 文件大小超限 */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result<Void> handleMaxUploadSize(MaxUploadSizeExceededException e) {
+        return Result.fail(400, "图片大小超过限制（最大 10MB）");
+    }
+
+    /** 未选择文件 */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public Result<Void> handleMissingPart(MissingServletRequestPartException e) {
+        return Result.fail(400, "请选择要上传的图片");
+    }
+
+    /** 文件上传中断/格式异常 */
+    @ExceptionHandler(MultipartException.class)
+    public Result<Void> handleMultipart(MultipartException e) {
+        log.warn("文件上传异常", e);
+        return Result.fail(400, "图片上传失败，请重新选择图片");
+    }
+
+    // ===== 文件读写 =====
+
+    @ExceptionHandler(IOException.class)
+    public Result<Void> handleIOException(IOException e) {
+        log.error("文件读写异常", e);
+        return Result.fail(500, "文件保存失败，请检查磁盘空间");
+    }
+
+    // ===== 数据库 =====
+
+    /** 数据库异常 — 不暴露 SQL 细节 */
+    @ExceptionHandler(DataAccessException.class)
+    public Result<Void> handleDataAccess(DataAccessException e) {
+        log.error("数据库异常", e);
+        return Result.fail(500, "数据服务暂不可用，请稍后重试");
     }
 
     // ===== 兜底 =====
 
-    /** 未预期的异常 — 记录日志，不暴露内部错误给客户端 */
     @ExceptionHandler(Exception.class)
     public Result<Void> handleException(Exception e) {
         log.error("系统异常", e);
-        return Result.fail(500, "服务器内部错误");
+        return Result.fail(500, "服务器繁忙，请稍后重试");
     }
 }
