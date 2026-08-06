@@ -51,9 +51,24 @@ export function getPoem(object) {
 
 // ===== 换一句 =====
 
-export function switchPoem(currentId) {
+export async function switchPoem(currentId) {
   if (USE_MOCK) return mock.switchPoem(currentId)
-  return http.get('/api/poem/random', { params: { exclude: currentId } })
+  // 后端返回 PoemVO 格式，转为 Store 认识的扁平格式
+  const raw = await http.get('/api/poem/random', { params: { exclude: currentId } })
+  return {
+    poemId: raw.poemId,
+    poemLine: raw.content,
+    poemPinyin: raw.pinyin,
+    poemSource: raw.author + '《' + raw.title + '》',
+    poemExplanation: raw.translation,
+    translation: raw.translation,
+    fullPoem: raw.fullContent || raw.content,
+    fullPinyin: raw.fullPinyin || raw.pinyin,
+    fullExplanation: raw.fullExplanation || raw.translation,
+    poemTitle: raw.title,
+    poemAuthor: raw.author,
+    poemDynasty: raw.dynasty
+  }
 }
 
 // ===== 保存发现 =====
@@ -83,15 +98,15 @@ function normalizeResult(result) {
       object: result.objectName,
       confidence: result.confidence
     },
-    poemId: null,
+    poemId: poem.poemId || null,
     poemLine: poem.content || '',
     poemPinyin: poem.pinyin || '',
     poemSource: poem.source || '',
     poemExplanation: poem.translation || '',
     translation: poem.translation || '',
-    fullPoem: poem.content || '',
-    fullPinyin: poem.pinyin || '',
-    fullExplanation: poem.translation || '',
+    fullPoem: poem.fullContent || poem.content || '',
+    fullPinyin: poem.fullPinyin || poem.pinyin || '',
+    fullExplanation: poem.fullExplanation || poem.translation || '',
     poemTitle: poem.title || '',
     poemAuthor: poem.author || '',
     poemDynasty: poem.dynasty || '',

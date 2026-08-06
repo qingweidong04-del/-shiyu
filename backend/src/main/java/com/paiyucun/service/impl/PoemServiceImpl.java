@@ -43,14 +43,31 @@ public class PoemServiceImpl implements PoemService {
         return toVO(poem);
     }
 
+    @Override
+    public PoemVO getRandom(Long excludeId) {
+        Poem poem = poemMapper.selectOne(
+                new LambdaQueryWrapper<Poem>()
+                        .ne(excludeId != null && excludeId > 0, Poem::getId, excludeId)
+                        .last("ORDER BY RAND() LIMIT 1")
+        );
+        if (poem == null) {
+            throw new BusinessException(404, "没有更多诗词了");
+        }
+        return toVO(poem);
+    }
+
     private PoemVO toVO(Poem poem) {
         PoemVO vo = new PoemVO();
+        vo.setPoemId(poem.getId());
         vo.setTitle(poem.getTitle());
         vo.setAuthor(poem.getAuthor());
         vo.setDynasty(poem.getDynasty());
         vo.setContent(poem.getMatchLine());
         vo.setPinyin(poem.getPinyin());
         vo.setTranslation(poem.getTranslation());
+        vo.setFullContent(poem.getContent());
+        vo.setFullPinyin(poem.getFullPinyin());
+        vo.setFullExplanation(poem.getExplanation());
         vo.setAudioUrl(null);
         return vo;
     }

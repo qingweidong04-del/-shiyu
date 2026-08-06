@@ -6,9 +6,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-/**
- * 跨域配置 — 允许前端开发服务器访问后端 API
- */
 @Configuration
 public class CorsConfig {
 
@@ -18,7 +15,7 @@ public class CorsConfig {
         config.addAllowedOriginPattern("*");
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
-        config.setAllowCredentials(true);
+        // allowCredentials=true 时不能用 allowedOrigins("*")，用 allowedOriginPatterns 可以
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

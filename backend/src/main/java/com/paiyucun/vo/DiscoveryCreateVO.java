@@ -18,12 +18,16 @@ public class DiscoveryCreateVO {
 
     @Data
     public static class PoemInfo {
+        private Long poemId;
         private String title;
-        private String content;
+        private String content;       // 匹配句
         private String author;
         private String dynasty;
-        private String pinyin;
-        private String translation;
-        private String source;
+        private String pinyin;        // 匹配句拼音
+        private String translation;   // 匹配句翻译
+        private String source;        // 出处 "杨万里《小池》"
+        private String fullContent;   // 完整诗文
+        private String fullPinyin;    // 完整拼音
+        private String fullExplanation; // 全文释义
     }
 }

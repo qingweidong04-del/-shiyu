@@ -7,11 +7,9 @@ import com.paiyucun.vo.PoemVO;
  */
 public interface PoemService {
 
-    /**
-     * 根据 AI 识别的物体名匹配古诗
-     *
-     * @param object 物体名，如"荷花"、"鸟"
-     * @return 匹配的诗词，未匹配返回 null
-     */
+    /** 根据物体名匹配古诗 */
     PoemVO getByObject(String object);
+
+    /** 随机一首（排除指定ID） */
+    PoemVO getRandom(Long excludeId);
 }

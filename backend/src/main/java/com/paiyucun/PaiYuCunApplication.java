@@ -11,12 +11,6 @@ public class PaiYuCunApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PaiYuCunApplication.class, args);
-        System.out.println("""
-
-                ============================================
-                   📖 拍遇存后端服务启动成功！
-                   API: http://localhost:8080
-                ============================================
-                """);
+        System.out.println("📖 拍遇存后端启动成功");
     }
 }

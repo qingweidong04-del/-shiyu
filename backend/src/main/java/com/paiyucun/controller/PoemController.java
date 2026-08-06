@@ -24,18 +24,16 @@ public class PoemController {
         this.poemService = poemService;
     }
 
-    /**
-     * 根据 AI 识别的物体名匹配古诗
-     *
-     * @param object 物体名，如"荷花"、"鸟"
-     */
     @GetMapping("/poem")
     public Result<PoemVO> getPoem(
-            @RequestParam("object")
-            @NotBlank(message = "object 不能为空")
-            String object
+            @RequestParam("object") @NotBlank(message = "object 不能为空") String object
     ) {
-        PoemVO poem = poemService.getByObject(object);
-        return Result.ok(poem);
+        return Result.ok(poemService.getByObject(object));
+    }
+
+    /** 随机另一首诗（换一句） */
+    @GetMapping("/poem/random")
+    public Result<PoemVO> random(@RequestParam(defaultValue = "0") Long exclude) {
+        return Result.ok(poemService.getRandom(exclude));
     }
 }

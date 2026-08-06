@@ -23,13 +23,17 @@ export async function createDiscovery(file) {
     objectName: raw.analysis.object,
     confidence: raw.analysis.confidence,
     poem: {
+      poemId: raw.poem.poemId,
       title: raw.poem.title,
       content: raw.poem.matchLine,
       author: raw.poem.author,
       dynasty: raw.poem.dynasty,
       pinyin: raw.poem.pinyin,
       translation: raw.poem.translation,
-      source: raw.poem.author + '《' + raw.poem.title + '》'
+      source: raw.poem.author + '《' + raw.poem.title + '》',
+      fullContent: raw.poem.content,
+      fullPinyin: raw.poem.fullPinyin,
+      fullExplanation: raw.poem.explanation
     }
   }
 }

@@ -52,8 +52,11 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         Discovery entity = new Discovery();
         entity.setImageUrl(imageUrl);
         entity.setObjectName(recognition.getObjectName());
-        entity.setPoemLine(poem != null ? poem.getContent() : null);
-        entity.setPoemSource(poem != null ? poem.getAuthor() + "《" + poem.getTitle() + "》" : null);
+        if (poem != null) {
+            entity.setPoemId(poem.getPoemId());
+            entity.setPoemLine(poem.getContent());
+            entity.setPoemSource(poem.getAuthor() + "《" + poem.getTitle() + "》");
+        }
         discoveryMapper.insert(entity);
 
         // ⑤ 组装返回
@@ -65,6 +68,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 
         if (poem != null) {
             DiscoveryCreateVO.PoemInfo info = new DiscoveryCreateVO.PoemInfo();
+            info.setPoemId(poem.getPoemId());
             info.setTitle(poem.getTitle());
             info.setContent(poem.getContent());
             info.setAuthor(poem.getAuthor());
@@ -72,6 +76,9 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             info.setPinyin(poem.getPinyin());
             info.setTranslation(poem.getTranslation());
             info.setSource(poem.getAuthor() + "《" + poem.getTitle() + "》");
+            info.setFullContent(poem.getFullContent());
+            info.setFullPinyin(poem.getFullPinyin());
+            info.setFullExplanation(poem.getFullExplanation());
             result.setPoem(info);
         }
 
