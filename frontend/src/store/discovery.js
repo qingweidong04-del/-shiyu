@@ -33,6 +33,7 @@ export const useDiscoveryStore = defineStore('discovery', () => {
       const result = await createDiscovery(currentImage.value?.file || currentImage.value?.base64)
       currentResult.value = {
         id: result.id || ('d_' + Date.now()),
+        poemId: result.poemId || result.poem?.poemId || null,
         photoUrl: result.photoUrl || result.imageUrl || '',
         poemLine: result.poemLine || result.poem?.content || '春眠不觉晓，处处闻啼鸟',
         poemPinyin: result.poemPinyin || result.poem?.pinyin || 'chūn mián bù jué xiǎo',
