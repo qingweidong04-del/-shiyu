@@ -4,6 +4,7 @@ import com.paiyucun.common.BusinessException;
 import com.paiyucun.service.AiRecognitionService;
 import com.paiyucun.vo.AiRecognitionVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Random;
  */
 @Slf4j
 @Service
+@ConditionalOnProperty(name = "app.ai.provider", havingValue = "mock", matchIfMissing = true)
 public class MockAiRecognitionService implements AiRecognitionService {
 
     private static final List<String> OBJECTS = List.of(
