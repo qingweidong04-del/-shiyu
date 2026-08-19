@@ -47,6 +47,25 @@
         <div class="spinner-flower">🌸</div>
         <p class="recognizing-title">正在观察...</p>
         <p class="recognizing-sub">AI 正在欣赏你拍下的世界</p>
+
+        <!-- 识别过程分步展示（纯视觉，配合真实识别时长） -->
+        <div class="recognize-steps">
+          <div class="step step--1">
+            <span class="step-icon">📤</span>
+            <span class="step-label">上传照片</span>
+          </div>
+          <span class="step-connector" />
+          <div class="step step--2">
+            <span class="step-icon">👀</span>
+            <span class="step-label">AI 观察</span>
+          </div>
+          <span class="step-connector" />
+          <div class="step step--3">
+            <span class="step-icon">📖</span>
+            <span class="step-label">匹配诗词</span>
+          </div>
+        </div>
+
         <!-- 进度点动画 -->
         <div class="dot-bounce">
           <span class="dot" />
@@ -306,5 +325,76 @@ function goDiscover() {
 @keyframes bounce {
   0%, 80%, 100% { transform: translateY(0); }
   40%           { transform: translateY(-12px); }
+}
+
+/* ===== 识别过程分步展示 ===== */
+.recognize-steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 76px;
+}
+
+.step-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border-radius: 50%;
+  background: #f6eddd;
+  color: #b8a48c;
+  animation: stepPulse 3.6s ease-in-out infinite;
+}
+
+.step-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #c3b39f;
+  animation: stepLabel 3.6s ease-in-out infinite;
+}
+
+.step--1 .step-icon, .step--1 .step-label { animation-delay: 0s; }
+.step--2 .step-icon, .step--2 .step-label { animation-delay: 1.2s; }
+.step--3 .step-icon, .step--3 .step-label { animation-delay: 2.4s; }
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  max-width: 44px;
+  margin-top: 21px;
+  background: linear-gradient(90deg, transparent, #eadfca, transparent);
+}
+
+@keyframes stepPulse {
+  0%, 45%, 100% {
+    transform: scale(1);
+    background: #f6eddd;
+    box-shadow: 0 0 0 0 rgba(232, 164, 64, 0);
+  }
+  18% {
+    transform: scale(1.14);
+    background: var(--color-primary);
+    box-shadow: 0 0 0 7px rgba(232, 164, 64, 0.16);
+  }
+  32% {
+    transform: scale(1);
+    background: #f2d9a8;
+    box-shadow: 0 0 0 0 rgba(232, 164, 64, 0);
+  }
+}
+
+@keyframes stepLabel {
+  0%, 45%, 100% { color: #c3b39f; }
+  18%, 32%      { color: var(--color-primary-dark); font-weight: 600; }
 }
 </style>

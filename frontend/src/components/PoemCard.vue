@@ -42,16 +42,33 @@ defineProps({
 <style scoped>
 .poem-card {
   margin: 0 var(--padding-page);
-  padding: 20px var(--padding-card) 22px;
-  /* 绘本纸张质感 */
-  background: linear-gradient(180deg, #fffef9 0%, #fef9f0 100%);
+  padding: 24px var(--padding-card) 22px;
+  /* 绘本纸张质感 + 柔和光斑 */
+  background:
+    radial-gradient(circle at 12% 18%, rgba(232, 164, 64, 0.07) 0, transparent 42%),
+    radial-gradient(circle at 88% 85%, rgba(180, 140, 90, 0.06) 0, transparent 46%),
+    linear-gradient(180deg, #fffef9 0%, #fef9f0 100%);
   border-radius: var(--radius-lg);
   box-shadow:
-    0 2px 16px rgba(0, 0, 0, 0.05),
+    0 6px 24px rgba(0, 0, 0, 0.06),
     0 1px 3px rgba(0, 0, 0, 0.04);
-  border: 1px solid rgba(200, 180, 150, 0.15);
+  border: 1px solid rgba(200, 180, 150, 0.18);
   position: relative;
   overflow: hidden;
+  /* 卡片入场动画 */
+  animation: cardReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 顶部彩色丝带装饰 */
+.poem-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary), var(--color-primary-light));
+  opacity: 0.75;
 }
 
 /* 顶部装饰 */
@@ -61,6 +78,7 @@ defineProps({
   justify-content: center;
   gap: 6px;
   margin-bottom: 12px;
+  animation: fadeUp 0.5s ease 0.05s both;
 }
 
 .ornament-dot {
@@ -141,5 +159,22 @@ defineProps({
   color: #6b5a48;
   line-height: 1.8;
   margin: 0;
+}
+
+/* ===== 卡片内容逐层浮现（诗词出现动画）===== */
+.poem-line     { animation: fadeUp 0.5s ease 0.12s both; }
+.poem-pinyin   { animation: fadeUp 0.5s ease 0.26s both; }
+.poem-source   { animation: fadeUp 0.5s ease 0.36s both; }
+.divider       { animation: fadeUp 0.5s ease 0.46s both; }
+.explanation-section { animation: fadeUp 0.5s ease 0.56s both; }
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(26px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 </style>

@@ -49,8 +49,16 @@
 
       <!-- WebRTC 等待中 -->
       <div v-if="mode === 'webrtc' && !streamReady" class="viewfinder-placeholder">
-        <div class="placeholder-icon">📷</div>
+        <div class="placeholder-icon-wrap">
+          <div class="placeholder-icon">📷</div>
+          <span class="placeholder-ring" />
+        </div>
         <p v-if="!permissionDenied" class="placeholder-text">正在启动相机...</p>
+        <div v-if="!permissionDenied" class="placeholder-dots">
+          <span class="p-dot" />
+          <span class="p-dot" />
+          <span class="p-dot" />
+        </div>
         <template v-else>
           <p class="placeholder-text">无法启动相机</p>
           <van-button round size="small" type="primary" @click.stop="initCamera">
@@ -356,7 +364,7 @@ function compressAndConvert(file) {
   justify-content: center; gap: 8px;
   background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
 }
-.guide-icon { font-size: 56px; opacity: 0.8; }
+.guide-icon { font-size: 56px; opacity: 0.8; animation: placeholderBreathe 2.4s ease-in-out infinite; }
 .guide-text { color: rgba(255,255,255,0.75); font-size: var(--font-size-md); }
 .guide-sub { color: rgba(255,255,255,0.4); font-size: var(--font-size-xs); margin-top: 2px; }
 
@@ -366,8 +374,35 @@ function compressAndConvert(file) {
   flex-direction: column; align-items: center; justify-content: center;
   gap: 12px; background: #2a2520;
 }
-.placeholder-icon { font-size: 56px; opacity: 0.6; }
+.placeholder-icon-wrap { position: relative; width: 84px; height: 84px; display: flex; align-items: center; justify-content: center; }
+.placeholder-icon { font-size: 56px; opacity: 0.7; animation: placeholderBreathe 2s ease-in-out infinite; }
+.placeholder-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.35);
+  animation: ringPulse 1.8s ease-out infinite;
+}
 .placeholder-text { color: rgba(255,255,255,0.6); font-size: var(--font-size-sm); }
+
+/* 启动等待三点 */
+.placeholder-dots { display: flex; gap: 7px; margin-top: 2px; }
+.p-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.45); animation: pDotBounce 1.2s ease-in-out infinite; }
+.p-dot:nth-child(2) { animation-delay: 0.18s; }
+.p-dot:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes placeholderBreathe {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50%      { transform: scale(1.08); opacity: 0.85; }
+}
+
+@keyframes ringPulse {
+  0%   { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+@keyframes pDotBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+  40%           { transform: translateY(-8px); opacity: 1; }
+}
 
 /* 四角装饰 */
 .frame-corners { position: absolute; inset: 12px; pointer-events: none; }

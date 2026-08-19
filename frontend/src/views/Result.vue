@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div class="poem-section">
+      <div class="poem-section" :key="result.poemId || result.poemLine">
         <PoemCard :result="result" />
       </div>
 
@@ -105,10 +105,20 @@ function goHome() { audioRef.value?.stop(); store.resetAll(); router.push({ name
 <style scoped>
 .result-page { min-height: 100%; background: linear-gradient(180deg, #fef9ed 0%, #fdf5e6 20%, #faf0dc 100%); padding-bottom: calc(24px + var(--safe-area-bottom)); }
 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 120px; gap: 20px; }
-.photo-area { position: relative; width: 100%; aspect-ratio: 4/3; overflow: hidden; background: #2a2520; }
+.photo-area { position: relative; width: 100%; aspect-ratio: 4/3; overflow: hidden; background: #2a2520; animation: fadeIn 0.5s ease both; }
 .photo-image { width: 100%; height: 100%; object-fit: cover; }
 .photo-gradient { position: absolute; bottom: 0; left: 0; right: 0; height: 48px; background: linear-gradient(to bottom, transparent, #fdf5e6); }
-.analysis-row { padding: 12px var(--padding-page) 0; position: relative; z-index: 1; }
+.analysis-row { padding: 12px var(--padding-page) 0; position: relative; z-index: 1; animation: fadeUp 0.5s ease 0.15s both; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .analysis-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .tag { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: var(--font-size-xs); font-weight: 500; }
 .tag-object { background: rgba(232,164,64,0.12); color: #b8751a; }
